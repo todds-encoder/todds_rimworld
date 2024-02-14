@@ -110,7 +110,9 @@ if (TODDS_WARNINGS_AS_ERRORS)
 			/wd6239      # Triggered by code inside of fmt.
 			/wd6294      # Triggered by OpenCV.
 			/wd6297      # Triggered by code inside of rgbcx.
+			/wd6326      # fmt/chrono.
 			/wd6385      # Triggered by OneAPI TBB on debug mode.
+			/wd28020     # https://github.com/nlohmann/json/issues/859
 			/wd28182     # Triggered by OneAPI TBB on debug mode.
 			/wd28301     # Triggered by the Windows API.
 			)

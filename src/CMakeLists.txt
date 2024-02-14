@@ -17,3 +17,5 @@ add_subdirectory(report)
 add_subdirectory(task)
 # Application module
 add_subdirectory(main)
+# UI for RimWorld module
+add_subdirectory(rimworld)

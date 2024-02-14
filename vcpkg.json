@@ -10,7 +10,11 @@
       "name": "opencv4",
       "default-features": false
     },
-    "tbb"
+    "tbb",
+    "clipboardxx",
+    "imgui-sfml",
+    "nlohmann-json",
+    "platform-folders"
   ],
   "features": {
     "mimalloc": {
