@@ -206,6 +206,7 @@ void show_processing_interface(execution_state& state) {
 			clipboardxx::clipboard clip{};
 			clip << rimworld::log::full_log().c_str();
 		}
+		ImGui::SameLine();
 		help_marker("Copy the full logs of the application (including any encoding errors) to the clipboard. Useful for "
 								"sharing bug reports.");
 
