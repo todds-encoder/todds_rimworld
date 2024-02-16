@@ -127,12 +127,12 @@ void show_processing_interface(execution_state& state) {
 	const auto file_retrieval_milliseconds = state.file_retrieval_milliseconds();
 	if (file_retrieval_milliseconds == 0U) {
 		const auto retrieval_progress_text = progress_text("In progress");
-		ImGui::Text(retrieval_progress_text.c_str(), "");
+		ImGui::TextUnformatted(retrieval_progress_text.c_str());
 		return;
 	}
 	const auto file_retrieval_seconds = static_cast<double>(file_retrieval_milliseconds) / 1000.0;
 	const auto file_retrieval_str = fmt::format("File retrieval time: {:.3f} seconds.", file_retrieval_seconds);
-	ImGui::Text(file_retrieval_str.c_str(), "");
+	ImGui::TextUnformatted(file_retrieval_str.c_str());
 	ImGui::NewLine();
 	ImGui::NewLine();
 
@@ -146,7 +146,7 @@ void show_processing_interface(execution_state& state) {
 		auto processing_textures_str = finished ?
 																		 fmt::format("Cleaned up {:d} textures.", total_files) :
 																		 progress_text(fmt::format("Cleaning up {:d} textures", total_files).c_str());
-		ImGui::Text(processing_textures_str.c_str(), "");
+		ImGui::TextUnformatted(processing_textures_str.c_str());
 	} else {
 		ImGui::SeparatorText("Texture encoding");
 		if (total_files != 0U) {
@@ -162,7 +162,7 @@ void show_processing_interface(execution_state& state) {
 	if (finished) {
 		const auto encoding_time_str = fmt::format("Texture processing time: {:.3f} seconds.", state.encoding_time());
 		ImGui::NewLine();
-		ImGui::Text(encoding_time_str.c_str(), "");
+		ImGui::TextUnformatted(encoding_time_str.c_str());
 	}
 
 	if (!is_cleaning && !finished) {
@@ -189,7 +189,7 @@ void show_processing_interface(execution_state& state) {
 			const auto total_time_str =
 				fmt::format("Total time: {:.3f} seconds.", file_retrieval_seconds + state.encoding_time());
 			ImGui::NewLine();
-			ImGui::Text(total_time_str.c_str(), "");
+			ImGui::TextUnformatted(total_time_str.c_str());
 		}
 		if (state.is_stopping()) {
 			ImGui::NewLine();
@@ -219,7 +219,7 @@ void show_processing_interface(execution_state& state) {
 			const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
 			if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), ImGuiChildFlags_None,
 						ImGuiWindowFlags_HorizontalScrollbar)) {
-				for (const auto& error : errors) { ImGui::Text(error.c_str(), ""); }
+				for (const auto& error : errors) { ImGui::TextUnformatted(error.c_str()); }
 			}
 			ImGui::EndChild();
 		}

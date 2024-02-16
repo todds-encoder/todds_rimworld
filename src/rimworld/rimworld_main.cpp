@@ -32,7 +32,7 @@ int main() {
 		return EXIT_FAILURE;
 	}
 
-	rimworld::execution_state state;
+	rimworld::execution_state state{};
 	state.load_preferences();
 
 	sf::Clock delta_clock{};
@@ -46,7 +46,7 @@ int main() {
 				window.close();
 			}
 		}
-		const std::uint32_t elapsed_milliseconds = delta_clock.getElapsedTime().asMilliseconds();
+		const auto elapsed_milliseconds = static_cast<std::uint32_t>(delta_clock.getElapsedTime().asMilliseconds());
 		ImGui::SFML::Update(window, delta_clock.restart());
 
 		// The UI might make some changes to the state, but nothing that will affect the pipeline.
@@ -59,7 +59,8 @@ int main() {
 		state.update(elapsed_milliseconds);
 		if (state.should_close_window()) {
 			rimworld::log::info("Processing close event dictated by the state.");
-			window.close(); }
+			window.close();
+		}
 	}
 	ImGui::SFML::Shutdown();
 

@@ -68,7 +68,7 @@ private:
 	bool _cleaning{};
 
 	// Processing stage.
-	oneapi::tbb::tick_count _start_encoding_time;
+	oneapi::tbb::tick_count _start_encoding_time{};
 	double _encoding_time{};
 	todds::args::data _arguments{};
 	std::future<void> _pipeline{};
