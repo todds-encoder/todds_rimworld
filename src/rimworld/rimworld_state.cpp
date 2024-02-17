@@ -20,6 +20,7 @@ namespace fs = boost::filesystem;
 namespace nl = nlohmann;
 namespace nw = boost::nowide;
 
+constexpr std::string_view font_size_key = "font_size";
 constexpr std::string_view target_path_key = "target_path";
 constexpr std::string_view process_all_files_key = "process_all_files";
 
@@ -64,6 +65,7 @@ todds::args::data arguments(const rimworld::execution_state& state) {
 namespace rimworld {
 
 void execution_state::reset_preferences() {
+	_font_size = font_size::medium;
 	_process_all_files = false;
 	set_target_path(default_mods_folder());
 }
@@ -75,13 +77,14 @@ void execution_state::load_preferences() {
 		try {
 			nw::ifstream ifs{config_path};
 			const nl::json json = nl::json::parse(ifs, nullptr, false, true);
-			if (json.is_discarded() || !json.contains(target_path_key) || !json.contains(process_all_files_key)) {
+			if (json.is_discarded()) {
 				rimworld::log::warn("Could not load config file.");
 				reset_preferences();
 				return;
 			}
-			set_target_path(json.at(target_path_key));
-			set_process_all_files(json.at(process_all_files_key));
+			if (json.contains(font_size_key)) { set_font_size(json.at(font_size_key)); }
+			if (json.contains(target_path_key)) { set_target_path(json.at(target_path_key)); }
+			if (json.contains(process_all_files_key)) { set_process_all_files(json.at(process_all_files_key)); }
 		} catch (const std::exception& exc) {
 			log::error(fmt::format("Could not load preferences because of an exception: {:s}", exc.what()));
 		}
@@ -96,6 +99,7 @@ void execution_state::load_preferences() {
 
 void execution_state::save_preferences() {
 	nl::json json;
+	json[font_size_key] = _font_size;
 	json[target_path_key] = _target_path;
 	json[process_all_files_key] = _process_all_files;
 	const auto config_path = config_file_path();
@@ -147,6 +151,9 @@ void execution_state::update(std::uint32_t /*elapsed_milliseconds*/) {
 		rimworld::log::info("Pipeline finished.");
 	}
 }
+
+void execution_state::set_font_size(font_size size) noexcept { _font_size = size; }
+font_size execution_state::get_font_size() const noexcept { return _font_size; }
 
 std::pair<todds::string, bool> execution_state::target_path() const { return {_target_path, _valid_target_path}; }
 
