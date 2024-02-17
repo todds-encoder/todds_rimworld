@@ -9,10 +9,15 @@
 #include "todds/rimworld_ui.hpp"
 
 #include <boost/nowide/filesystem.hpp>
+#include <boost/predef.h>
 #include <imgui-SFML.h>
 #include <SFML/Graphics.hpp>
 
 #include <array>
+
+#if BOOST_OS_WINDOWS
+#include <Windows.h>
+#endif // BOOST_OS_WINDOWS
 
 int main() {
 	// Use UTF-8 as the default encoding for Boost.Filesystem and the global C++ locale.
@@ -22,9 +27,14 @@ int main() {
 	rimworld::log::info("Initialized log system.");
 
 	// Window initialization.
-	constexpr int initial_width = 800;
-	constexpr int initial_height = 600;
+	constexpr int initial_width = 1024;
+	constexpr int initial_height = 800;
 	sf::RenderWindow window(sf::VideoMode(initial_width, initial_height), rimworld::app_name());
+
+#if BOOST_OS_WINDOWS
+	::ShowWindow(window.getSystemHandle(), SW_MAXIMIZE);
+#endif // BOOST_OS_WINDOWS
+
 	constexpr int frame_rate_limit = 60;
 	window.setFramerateLimit(frame_rate_limit);
 	if (!ImGui::SFML::Init(window)) {
