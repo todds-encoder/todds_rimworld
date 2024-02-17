@@ -10,6 +10,7 @@ find_package(unofficial-clipboardxx)
 configure_file(include/todds/rimworld_project.hpp.in include/todds/rimworld_project.hpp @ONLY)
 
 add_executable(rimworld_todds
+	include/todds/manrope_font.hpp
 	include/todds/rimworld_log.hpp
 	include/todds/rimworld_state.hpp
 	include/todds/rimworld_ui.hpp

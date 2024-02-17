@@ -11,6 +11,8 @@ namespace rimworld {
 
 class execution_state;
 
+void initialize_interface();
+
 void show_user_interface(std::uint32_t elapsed_milliseconds, execution_state& state);
 
 } // namespace rimworld

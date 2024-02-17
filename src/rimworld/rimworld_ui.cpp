@@ -5,7 +5,7 @@
 
 #include "todds/rimworld_ui.hpp"
 
-#include "todds/project.hpp"
+#include "todds/manrope_font.hpp"
 #include "todds/rimworld_log.hpp"
 #include "todds/rimworld_project.hpp"
 #include "todds/rimworld_state.hpp"
@@ -16,6 +16,7 @@
 #include <imgui_stdlib.h>
 
 #include "fmt/format.h"
+#include "imgui-SFML.h"
 
 constexpr ImU32 error_color = IM_COL32(255U, 0U, 0U, 255U);
 
@@ -41,6 +42,13 @@ constexpr const char* path_help_marker =
 #endif
 
 namespace rimworld {
+
+void initialize_interface() {
+	ImGuiIO& imgui_io = ImGui::GetIO();
+	(void)imgui_io.Fonts->AddFontFromMemoryCompressedTTF(manrope_regular_compressed_data.data(),
+		manrope_regular_compressed_size, 24.0F, nullptr, imgui_io.Fonts->GetGlyphRangesDefault());
+	ImGui::SFML::UpdateFontTexture();
+}
 
 std::uint8_t& progress_text_state() {
 	static std::uint8_t value;
@@ -231,8 +239,10 @@ void show_user_interface(std::uint32_t elapsed_milliseconds, execution_state& st
 	constexpr ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
 																		 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	auto& imgui_io = ImGui::GetIO();
 	ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
 	if (!ImGui::Begin(rimworld::app_name(), nullptr, flags)) { return; }
+	ImGui::PushFont(imgui_io.Fonts->Fonts[1]);
 
 	update_progress_text(elapsed_milliseconds);
 	if (state.started()) {
@@ -241,6 +251,7 @@ void show_user_interface(std::uint32_t elapsed_milliseconds, execution_state& st
 		show_setup_interface(state);
 	}
 
+	ImGui::PopFont();
 	ImGui::End();
 }
 
