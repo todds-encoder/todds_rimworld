@@ -12,11 +12,10 @@
 
 #include <boost/predef.h>
 #include <clipboardxx.hpp>
+#include <fmt/format.h>
+#include <imgui-SFML.h>
 #include <imgui.h>
 #include <imgui_stdlib.h>
-
-#include "fmt/format.h"
-#include "imgui-SFML.h"
 
 constexpr ImU32 error_color = IM_COL32(255U, 0U, 0U, 255U);
 
