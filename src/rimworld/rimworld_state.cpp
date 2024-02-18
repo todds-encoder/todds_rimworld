@@ -123,22 +123,22 @@ void execution_state::update(std::uint32_t /*elapsed_milliseconds*/) {
 	while (_updates.try_pop(update)) {
 		switch (update.type()) {
 		case todds::report_type::RETRIEVING_FILES:
-			rimworld::log::info("Received RETRIEVING_FILES report.");
+			rimworld::log::info("RETRIEVING_FILES report.");
 			_retrieving_files = true;
 			break;
 		case todds::report_type::FILE_RETRIEVAL_TIME:
 			_file_retrieval_milliseconds = update.value();
-			rimworld::log::info(fmt::format("Received FILE_RETRIEVAL_TIME report: {:d}", _file_retrieval_milliseconds));
+			rimworld::log::info(fmt::format("FILE_RETRIEVAL_TIME report: {:d} ms", _file_retrieval_milliseconds));
 			break;
 		case todds::report_type::FILE_VERBOSE: break;
 		case todds::report_type::PROCESS_STARTED:
 			_start_encoding_time = oneapi::tbb::tick_count::now();
 			_total_files = update.value();
-			rimworld::log::info(fmt::format("Received PROCESS_STARTED report: {:d}", _total_files));
+			rimworld::log::info(fmt::format("PROCESS_STARTED report: {:d} files", _total_files));
 			break;
 		case todds::report_type::ENCODING_PROGRESS: ++_current_files; break;
 		case todds::report_type::PIPELINE_ERROR:
-			rimworld::log::error(fmt::format("Received PIPELINE_ERROR report: {:s}", update.data()));
+			rimworld::log::error(fmt::format("PIPELINE_ERROR: {:s}", update.data()));
 			_errors.emplace_back(update.data());
 			break;
 		}
