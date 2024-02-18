@@ -18,13 +18,6 @@
 
 namespace rimworld {
 
-enum class font_size {
-	small = 1U,
-	medium,
-	large,
-	huge,
-};
-
 /** Representation of the encoding arguments and pipeline execution state. */
 class execution_state final {
 public:
@@ -38,8 +31,9 @@ public:
 	 */
 	void update(std::uint32_t elapsed_milliseconds);
 
-	void set_font_size(font_size size) noexcept;
-	font_size get_font_size() const noexcept;
+	bool should_update_font() noexcept;
+	void set_font_size(float size) noexcept;
+	float get_font_size() const noexcept;
 
 	[[nodiscard]] std::pair<todds::string, bool> target_path() const;
 	void set_target_path(const todds::string& path);
@@ -72,7 +66,8 @@ public:
 
 private:
 	// Setup stage.
-	font_size _font_size{font_size::medium};
+	float _font_size{22.0F};
+	bool _font_updated{};
 	todds::string _target_path{};
 	bool _valid_target_path{};
 	bool _process_all_files{};

@@ -11,7 +11,7 @@ namespace rimworld {
 
 class execution_state;
 
-void initialize_interface();
+void setup_font(execution_state& state);
 
 void show_user_interface(std::uint32_t elapsed_milliseconds, execution_state& state);
 

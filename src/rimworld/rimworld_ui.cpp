@@ -40,18 +40,12 @@ constexpr const char* path_help_marker =
 	"future.";
 #endif
 
-void initialize_font(float size_pixels) {
-	(void)ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(
-		manrope_regular_compressed_data.data(), manrope_regular_compressed_size, size_pixels);
-}
-
 namespace rimworld {
 
-void initialize_interface() {
-	initialize_font(16.0F);
-	initialize_font(22.0F);
-	initialize_font(32.0F);
-	initialize_font(42.0F);
+void setup_font(execution_state& state) {
+	ImGui::GetIO().Fonts->Clear();
+	(void)ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(
+		manrope_regular_compressed_data.data(), manrope_regular_compressed_size, state.get_font_size());
 	ImGui::SFML::UpdateFontTexture();
 }
 
@@ -132,16 +126,10 @@ void show_setup_interface(execution_state& state) {
 	ImGui::NewLine();
 
 	ImGui::SeparatorText("Font size");
-	int font_size_int = static_cast<int>(state.get_font_size());
-	ImGui::RadioButton("Small", &font_size_int, 1);
-	ImGui::SameLine();
-	ImGui::RadioButton("Medium", &font_size_int, 2);
-	ImGui::SameLine();
-	ImGui::RadioButton("Large", &font_size_int, 3);
-	ImGui::SameLine();
-	ImGui::RadioButton("Huge", &font_size_int, 4);
-	state.set_font_size(static_cast<font_size>(font_size_int));
-	ImGui::SameLine();
+	int font_size = static_cast<int>(state.get_font_size());
+	const int prev_font_size = font_size;
+	ImGui::SliderInt("##font_size", &font_size, 10, 64, "%d");
+	if (prev_font_size != font_size) { state.set_font_size(static_cast<float>(font_size)); }
 }
 
 void show_processing_interface(execution_state& state) {
@@ -261,7 +249,7 @@ void show_user_interface(std::uint32_t elapsed_milliseconds, execution_state& st
 	auto& imgui_io = ImGui::GetIO();
 	ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
 	if (!ImGui::Begin(rimworld::app_name(), nullptr, flags)) { return; }
-	ImGui::PushFont(imgui_io.Fonts->Fonts[static_cast<int>(state.get_font_size())]);
+	ImGui::PushFont(imgui_io.Fonts->Fonts[0]);
 
 	update_progress_text(elapsed_milliseconds);
 	if (state.started()) {

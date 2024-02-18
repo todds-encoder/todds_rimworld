@@ -65,7 +65,7 @@ todds::args::data arguments(const rimworld::execution_state& state) {
 namespace rimworld {
 
 void execution_state::reset_preferences() {
-	_font_size = font_size::medium;
+	_font_size = 22.0F;
 	_process_all_files = false;
 	set_target_path(default_mods_folder());
 }
@@ -152,8 +152,17 @@ void execution_state::update(std::uint32_t /*elapsed_milliseconds*/) {
 	}
 }
 
-void execution_state::set_font_size(font_size size) noexcept { _font_size = size; }
-font_size execution_state::get_font_size() const noexcept { return _font_size; }
+bool execution_state::should_update_font() noexcept {
+	const bool result = !_font_updated;
+	_font_updated = true;
+	return result;
+}
+void execution_state::set_font_size(float size) noexcept {
+	_font_updated = false;
+	_font_size = size;
+}
+
+float execution_state::get_font_size() const noexcept { return _font_size; }
 
 std::pair<todds::string, bool> execution_state::target_path() const { return {_target_path, _valid_target_path}; }
 

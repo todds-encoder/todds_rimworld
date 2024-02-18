@@ -41,7 +41,6 @@ int main() {
 		rimworld::log::error("Could not initialize window.");
 		return EXIT_FAILURE;
 	}
-	rimworld::initialize_interface();
 
 	rimworld::execution_state state{};
 	state.load_preferences();
@@ -57,6 +56,11 @@ int main() {
 				window.close();
 			}
 		}
+		if (state.should_update_font())
+		{
+			rimworld::setup_font(state);
+		}
+
 		const auto elapsed_milliseconds = static_cast<std::uint32_t>(delta_clock.getElapsedTime().asMilliseconds());
 		ImGui::SFML::Update(window, delta_clock.restart());
 
