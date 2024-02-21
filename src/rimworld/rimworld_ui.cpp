@@ -219,7 +219,9 @@ void show_processing_interface(execution_state& state, ui_impl& ui_data) {
 		const auto& errors = state.errors();
 		if (!errors.empty()) {
 			ImGui::NewLine();
+			ImGui::PushStyleColor(ImGuiCol_Text, error_color);
 			ImGui::Text("The following errors have been detected.");
+			ImGui::PopStyleColor();
 			ImGui::NewLine();
 
 			const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
