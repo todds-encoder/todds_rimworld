@@ -6,13 +6,21 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 
 namespace rimworld {
 
 class execution_state;
 
-void setup_font(execution_state& state);
+class user_interface final {
+public:
+	user_interface();
+	~user_interface();
+	void setup_font(execution_state& state);
+	void show_user_interface(std::uint32_t elapsed_milliseconds, execution_state& state);
 
-void show_user_interface(std::uint32_t elapsed_milliseconds, execution_state& state);
+private:
+	std::unique_ptr<struct ui_impl> _pimpl;
+};
 
 } // namespace rimworld

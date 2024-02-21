@@ -52,6 +52,7 @@ public:
 	bool finished() const noexcept;
 
 	bool retrieving_files() const noexcept;
+	std::size_t processed_files_during_retrieval() const noexcept;
 	std::size_t file_retrieval_milliseconds() const noexcept;
 	std::size_t total_files() const noexcept;
 	std::size_t current_files() const noexcept;
@@ -83,6 +84,7 @@ private:
 	todds::report_queue _updates{};
 
 	bool _retrieving_files{};
+	std::size_t _processed_files_during_retrieval{};
 	std::size_t _file_retrieval_milliseconds{};
 	std::size_t _total_files{};
 	std::size_t _current_files{};

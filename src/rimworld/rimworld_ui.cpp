@@ -40,44 +40,32 @@ constexpr const char* path_help_marker =
 	"future.";
 #endif
 
-namespace rimworld {
-
-void setup_font(execution_state& state) {
-	ImGui::GetIO().Fonts->Clear();
-	(void)ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(
-		manrope_regular_compressed_data.data(), manrope_regular_compressed_size, state.get_font_size());
-	ImGui::SFML::UpdateFontTexture();
-}
-
-std::uint8_t& progress_text_state() {
-	static std::uint8_t value;
-	return value;
-}
-
-std::uint32_t& progress_text_timer() {
-	static std::uint32_t value;
-	return value;
-}
-
-void update_progress_text(std::uint32_t elapsed_milliseconds) {
-	std::uint32_t& timer = progress_text_timer();
-	timer += elapsed_milliseconds;
+todds::string progress_text(const char* original_string, std::uint32_t total_millis) {
 	constexpr std::uint32_t milliseconds_per_change = 500U;
-	if (timer > milliseconds_per_change) {
-		timer %= milliseconds_per_change;
-		std::uint8_t& state = progress_text_state();
-		++state;
-		state %= 4U;
-	}
-}
-
-todds::string progress_text(const char* original_string) {
-	switch (progress_text_state()) {
+	switch ((total_millis / milliseconds_per_change) % 4) {
 	default: return original_string;
 	case 1U: return fmt::format("{:s}.", original_string);
 	case 2U: return fmt::format("{:s}..", original_string);
 	case 3U: return fmt::format("{:s}...", original_string);
 	}
+}
+
+namespace rimworld {
+
+struct ui_impl final {
+	std::uint32_t total_millis{};
+};
+
+user_interface::user_interface()
+	: _pimpl{std::make_unique<ui_impl>()} {}
+
+user_interface::~user_interface() = default;
+
+void user_interface::setup_font(execution_state& state) {
+	ImGui::GetIO().Fonts->Clear();
+	(void)ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(
+		manrope_regular_compressed_data.data(), manrope_regular_compressed_size, state.get_font_size());
+	ImGui::SFML::UpdateFontTexture();
 }
 
 void show_setup_interface(execution_state& state) {
@@ -132,7 +120,7 @@ void show_setup_interface(execution_state& state) {
 	if (prev_font_size != font_size) { state.set_font_size(static_cast<float>(font_size)); }
 }
 
-void show_processing_interface(execution_state& state) {
+void show_processing_interface(execution_state& state, ui_impl& ui_data) {
 	if (!state.retrieving_files()) {
 		ImGui::SeparatorText("Process started");
 		return;
@@ -141,8 +129,10 @@ void show_processing_interface(execution_state& state) {
 	ImGui::SeparatorText("File retrieval");
 	const auto file_retrieval_milliseconds = state.file_retrieval_milliseconds();
 	if (file_retrieval_milliseconds == 0U) {
-		const auto retrieval_progress_text = progress_text("In progress");
-		ImGui::TextUnformatted(retrieval_progress_text.c_str());
+		ImGui::TextUnformatted(progress_text("In progress", ui_data.total_millis).c_str());
+		ImGui::TextUnformatted(
+			fmt::format("Processed filesystem entries: {:d}.", state.processed_files_during_retrieval()).c_str());
+
 		return;
 	}
 	const auto file_retrieval_seconds = static_cast<double>(file_retrieval_milliseconds) / 1000.0;
@@ -158,13 +148,14 @@ void show_processing_interface(execution_state& state) {
 	const bool finished = state.finished();
 	if (is_cleaning) {
 		ImGui::SeparatorText("Texture cleaning");
-		auto processing_textures_str = finished ?
-																		 fmt::format("Cleaned up {:d} textures.", total_files) :
-																		 progress_text(fmt::format("Cleaning up {:d} textures", total_files).c_str());
+		auto processing_textures_str =
+			finished ? fmt::format("Cleaned up {:d} textures.", total_files) :
+								 progress_text(fmt::format("Cleaning up {:d} textures", total_files).c_str(), ui_data.total_millis);
 		ImGui::TextUnformatted(processing_textures_str.c_str());
 	} else {
 		ImGui::SeparatorText("Texture encoding");
 		if (total_files != 0U) {
+			ImGui::TextUnformatted(progress_text("In progress", ui_data.total_millis).c_str());
 			const auto current_files = state.current_files();
 			const float fraction = static_cast<float>(current_files) / static_cast<float>(total_files);
 			const auto overlay_str = fmt::format("{:d} / {:d}", current_files, total_files);
@@ -241,7 +232,9 @@ void show_processing_interface(execution_state& state) {
 	}
 }
 
-void show_user_interface(std::uint32_t elapsed_milliseconds, execution_state& state) {
+void user_interface::show_user_interface(std::uint32_t elapsed_milliseconds, execution_state& state) {
+	_pimpl->total_millis += elapsed_milliseconds;
+
 	// UI takes all available space left by SFML.
 	constexpr ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
 																		 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
@@ -251,9 +244,8 @@ void show_user_interface(std::uint32_t elapsed_milliseconds, execution_state& st
 	if (!ImGui::Begin(rimworld::app_name(), nullptr, flags)) { return; }
 	ImGui::PushFont(imgui_io.Fonts->Fonts[0]);
 
-	update_progress_text(elapsed_milliseconds);
 	if (state.started()) {
-		show_processing_interface(state);
+		show_processing_interface(state, *_pimpl);
 	} else {
 		show_setup_interface(state);
 	}

@@ -36,7 +36,7 @@ todds::args::data arguments(const rimworld::execution_state& state) {
 	// Values coming from state are addressed first.
 	todds::args::data data{};
 	// Input is assumed to be valid. The UI prevents the processing from starting in this case.
-	data.input = state.target_path().first;
+	data.input.emplace_back(state.target_path().first);
 	data.overwrite = state.process_all_files();
 	data.overwrite_new = !data.overwrite;
 	data.clean = state.is_cleaning();
@@ -122,10 +122,11 @@ void execution_state::update(std::uint32_t /*elapsed_milliseconds*/) {
 	todds::report update{};
 	while (_updates.try_pop(update)) {
 		switch (update.type()) {
-		case todds::report_type::RETRIEVING_FILES:
-			rimworld::log::info("RETRIEVING_FILES report.");
+		case todds::report_type::RETRIEVING_FILES_STARTED:
+			rimworld::log::info("RETRIEVING_FILES_STARTED report.");
 			_retrieving_files = true;
 			break;
+		case todds::report_type::RETRIEVING_FILES_PROGRESS: ++_processed_files_during_retrieval; break;
 		case todds::report_type::FILE_RETRIEVAL_TIME:
 			_file_retrieval_milliseconds = update.value();
 			rimworld::log::info(fmt::format("FILE_RETRIEVAL_TIME report: {:d} ms", _file_retrieval_milliseconds));
@@ -197,6 +198,7 @@ bool execution_state::started() const noexcept { return _pipeline.valid(); }
 bool execution_state::finished() const noexcept { return _finished; }
 
 bool execution_state::retrieving_files() const noexcept { return _retrieving_files; }
+std::size_t execution_state::processed_files_during_retrieval() const noexcept { return _processed_files_during_retrieval; }
 std::size_t execution_state::file_retrieval_milliseconds() const noexcept { return _file_retrieval_milliseconds; }
 std::size_t execution_state::total_files() const noexcept { return _total_files; }
 std::size_t execution_state::current_files() const noexcept { return _current_files; }

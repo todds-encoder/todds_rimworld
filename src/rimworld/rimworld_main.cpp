@@ -45,6 +45,7 @@ int main() {
 	rimworld::execution_state state{};
 	state.load_preferences();
 
+	rimworld::user_interface user_interface{};
 	sf::Clock delta_clock{};
 	while (window.isOpen()) {
 		sf::Event event{};
@@ -56,16 +57,13 @@ int main() {
 				window.close();
 			}
 		}
-		if (state.should_update_font())
-		{
-			rimworld::setup_font(state);
-		}
+		if (state.should_update_font()) { user_interface.setup_font(state); }
 
 		const auto elapsed_milliseconds = static_cast<std::uint32_t>(delta_clock.getElapsedTime().asMilliseconds());
 		ImGui::SFML::Update(window, delta_clock.restart());
 
 		// The UI might make some changes to the state, but nothing that will affect the pipeline.
-		rimworld::show_user_interface(elapsed_milliseconds, state);
+		user_interface.show_user_interface(elapsed_milliseconds, state);
 
 		window.clear(sf::Color::Blue);
 		ImGui::SFML::Render(window);
