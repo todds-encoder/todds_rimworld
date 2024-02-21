@@ -30,6 +30,8 @@ target_include_directories(rimworld_todds PRIVATE
 
 target_compile_options(rimworld_todds PRIVATE ${TODDS_CPP_WARNING_FLAGS})
 
+target_compile_definitions(rimworld_todds PUBLIC IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
+
 target_link_libraries(rimworld_todds PRIVATE
 	todds_project
 	todds_arguments
