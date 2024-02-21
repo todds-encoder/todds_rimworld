@@ -10,6 +10,7 @@
 
 #include <boost/nowide/filesystem.hpp>
 #include <boost/nowide/iostream.hpp>
+#include <boost/predef.h>
 #include <fmt/format.h>
 #include <oneapi/tbb/tick_count.h>
 
@@ -67,7 +68,8 @@ void process_pipeline_reports(
 
 		while (updates.try_pop(update)) {
 			switch (update.type()) {
-			case todds::report_type::RETRIEVING_FILES: cout << "Retrieving files to be processed.\n"; break;
+			case todds::report_type::RETRIEVING_FILES_STARTED: cout << "Retrieving files to be processed.\n"; break;
+			case todds::report_type::RETRIEVING_FILES_PROGRESS: break;
 			case todds::report_type::FILE_RETRIEVAL_TIME:
 				cout << fmt::format("File retrieval time: {:.3f} seconds.\n", (static_cast<double>(update.value()) / 1000.0));
 				break;
