@@ -97,6 +97,7 @@ void show_setup_interface(execution_state& state) {
 	constexpr const char* encode_new = "Encode new textures";
 	constexpr const char* encode_all = "Encode all textures";
 	ImGui::SeparatorText("Launch");
+
 	if (ImGui::Button(process_all_files_int == 1 ? encode_all : encode_new) && valid_path) { state.set_encoding(); }
 	ImGui::SameLine();
 	help_marker("Launch the encoding process. After some initial processing time, a progress bar will be shown. It is "
@@ -110,6 +111,15 @@ void show_setup_interface(execution_state& state) {
 	ImGui::SameLine();
 	help_marker("Delete any textures encoded previously. This only affects encoded versions; original textures are left "
 							"untouched.");
+	ImGui::NewLine();
+	ImGui::NewLine();
+
+	ImGui::SeparatorText("Number of threads");
+	int threads = static_cast<int>(state.get_threads());
+	ImGui::SliderInt("##threads", &threads, 1, static_cast<int>(state.get_max_threads()), "%d");
+	state.set_threads(static_cast<std::size_t>(threads));
+	ImGui::SameLine();
+	help_marker("Number of threads to use during the encoding process. By default this is set to the maximum value. Reducing this value will increase the time required to finish the process, but it will also make the computer less prone to freezing while ToDDS is working.");
 	ImGui::NewLine();
 	ImGui::NewLine();
 

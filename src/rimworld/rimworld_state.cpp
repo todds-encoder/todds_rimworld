@@ -51,7 +51,7 @@ todds::args::data arguments(const rimworld::execution_state& state) {
 	data.mipmap_blur = 0.55;
 	data.scale = 100U;
 	data.scale_filter = todds::filter::type::lanczos;
-	data.threads = static_cast<std::size_t>(oneapi::tbb::info::default_concurrency());
+	data.threads = state.get_threads();
 	data.depth = std::numeric_limits<std::size_t>::max();
 	data.overwrite_new = true;
 	data.vflip = true;
@@ -181,6 +181,10 @@ bool execution_state::process_all_files() const noexcept { return _process_all_f
 
 void execution_state::set_process_all_files(bool value) noexcept { _process_all_files = value; }
 
+void execution_state::set_threads(std::size_t threads) noexcept { _threads = threads; }
+std::size_t execution_state::get_threads() const noexcept { return _threads; }
+std::size_t execution_state::get_max_threads() const noexcept { return _max_threads; }
+
 bool execution_state::is_encoding() const noexcept { return _encoding; }
 void execution_state::set_encoding() noexcept {
 	rimworld::log::info("Launching encoding process.");
@@ -198,7 +202,9 @@ bool execution_state::started() const noexcept { return _pipeline.valid(); }
 bool execution_state::finished() const noexcept { return _finished; }
 
 bool execution_state::retrieving_files() const noexcept { return _retrieving_files; }
-std::size_t execution_state::processed_files_during_retrieval() const noexcept { return _processed_files_during_retrieval; }
+std::size_t execution_state::processed_files_during_retrieval() const noexcept {
+	return _processed_files_during_retrieval;
+}
 std::size_t execution_state::file_retrieval_milliseconds() const noexcept { return _file_retrieval_milliseconds; }
 std::size_t execution_state::total_files() const noexcept { return _total_files; }
 std::size_t execution_state::current_files() const noexcept { return _current_files; }

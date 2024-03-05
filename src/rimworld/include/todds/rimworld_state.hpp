@@ -10,6 +10,7 @@
 #include "todds/string.hpp"
 #include "todds/vector.hpp"
 
+#include <oneapi/tbb/info.h>
 #include <oneapi/tbb/tick_count.h>
 
 #include <cstdint>
@@ -42,6 +43,9 @@ public:
 	bool process_all_files() const noexcept;
 	void set_process_all_files(bool value) noexcept;
 
+	void set_threads(std::size_t threads) noexcept;
+	std::size_t get_threads() const noexcept;
+	std::size_t get_max_threads() const noexcept;
 	bool is_encoding() const noexcept;
 	void set_encoding() noexcept;
 
@@ -74,6 +78,8 @@ private:
 	bool _process_all_files{};
 	bool _encoding{};
 	bool _cleaning{};
+	std::size_t _threads{static_cast<std::size_t>(oneapi::tbb::info::default_concurrency())};
+	std::size_t _max_threads{static_cast<std::size_t>(oneapi::tbb::info::default_concurrency())};
 
 	// Processing stage.
 	oneapi::tbb::tick_count _start_encoding_time{};
