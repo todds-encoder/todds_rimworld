@@ -40,7 +40,8 @@ constexpr const char* path_help_marker =
 	"future.";
 #endif
 
-todds::string progress_text(const char* original_string, std::uint32_t total_millis) {
+todds::string progress_text(const char* original_string, std::uint32_t total_millis, bool finished) {
+	if (finished) { return fmt::format("{:s}...", original_string); }
 	constexpr std::uint32_t milliseconds_per_change = 500U;
 	switch ((total_millis / milliseconds_per_change) % 4) {
 	default: return original_string;
@@ -119,7 +120,9 @@ void show_setup_interface(execution_state& state) {
 	ImGui::SliderInt("##threads", &threads, 1, static_cast<int>(state.get_max_threads()), "%d");
 	state.set_threads(static_cast<std::size_t>(threads));
 	ImGui::SameLine();
-	help_marker("Number of threads to use during the encoding process. By default this is set to the maximum value. Reducing this value will increase the time required to finish the process, but it will also make the computer less prone to freezing while ToDDS is working.");
+	help_marker("Number of threads to use during the encoding process. By default this is set to the maximum value. "
+							"Reducing this value will increase the time required to finish the process, but it will also make the "
+							"computer less prone to freezing while ToDDS is working.");
 	ImGui::NewLine();
 	ImGui::NewLine();
 
@@ -139,7 +142,7 @@ void show_processing_interface(execution_state& state, ui_impl& ui_data) {
 	ImGui::SeparatorText("File retrieval");
 	const auto file_retrieval_milliseconds = state.file_retrieval_milliseconds();
 	if (file_retrieval_milliseconds == 0U) {
-		ImGui::TextUnformatted(progress_text("In progress", ui_data.total_millis).c_str());
+		ImGui::TextUnformatted(progress_text("In progress", ui_data.total_millis, state.finished()).c_str());
 		ImGui::TextUnformatted(
 			fmt::format("Processed filesystem entries: {:d}.", state.processed_files_during_retrieval()).c_str());
 
@@ -160,12 +163,12 @@ void show_processing_interface(execution_state& state, ui_impl& ui_data) {
 		ImGui::SeparatorText("Texture cleaning");
 		auto processing_textures_str =
 			finished ? fmt::format("Cleaned up {:d} textures.", total_files) :
-								 progress_text(fmt::format("Cleaning up {:d} textures", total_files).c_str(), ui_data.total_millis);
+								 progress_text(fmt::format("Cleaning up {:d} textures", total_files).c_str(), ui_data.total_millis, state.finished());
 		ImGui::TextUnformatted(processing_textures_str.c_str());
 	} else {
 		ImGui::SeparatorText("Texture encoding");
 		if (total_files != 0U) {
-			ImGui::TextUnformatted(progress_text("In progress", ui_data.total_millis).c_str());
+			ImGui::TextUnformatted(progress_text("In progress", ui_data.total_millis, state.finished()).c_str());
 			const auto current_files = state.current_files();
 			const float fraction = static_cast<float>(current_files) / static_cast<float>(total_files);
 			const auto overlay_str = fmt::format("{:d} / {:d}", current_files, total_files);
