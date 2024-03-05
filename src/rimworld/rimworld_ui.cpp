@@ -99,6 +99,7 @@ void show_setup_interface(execution_state& state) {
 	constexpr const char* encode_all = "Encode all textures";
 	ImGui::SeparatorText("Launch");
 
+	if (!valid_path) { ImGui::BeginDisabled(true); }
 	if (ImGui::Button(process_all_files_int == 1 ? encode_all : encode_new) && valid_path) { state.set_encoding(); }
 	ImGui::SameLine();
 	help_marker("Launch the encoding process. After some initial processing time, a progress bar will be shown. It is "
@@ -112,6 +113,7 @@ void show_setup_interface(execution_state& state) {
 	ImGui::SameLine();
 	help_marker("Delete any textures encoded previously. This only affects encoded versions; original textures are left "
 							"untouched.");
+	if (!valid_path) { ImGui::EndDisabled(); }
 	ImGui::NewLine();
 	ImGui::NewLine();
 
@@ -161,9 +163,10 @@ void show_processing_interface(execution_state& state, ui_impl& ui_data) {
 	const bool finished = state.finished();
 	if (is_cleaning) {
 		ImGui::SeparatorText("Texture cleaning");
-		auto processing_textures_str =
-			finished ? fmt::format("Cleaned up {:d} textures.", total_files) :
-								 progress_text(fmt::format("Cleaning up {:d} textures", total_files).c_str(), ui_data.total_millis, state.finished());
+		auto processing_textures_str = finished ?
+																		 fmt::format("Cleaned up {:d} textures.", total_files) :
+																		 progress_text(fmt::format("Cleaning up {:d} textures", total_files).c_str(),
+																			 ui_data.total_millis, state.finished());
 		ImGui::TextUnformatted(processing_textures_str.c_str());
 	} else {
 		ImGui::SeparatorText("Texture encoding");
