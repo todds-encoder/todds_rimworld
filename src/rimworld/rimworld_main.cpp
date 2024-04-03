@@ -46,7 +46,7 @@ int main() {
 	rimworld::execution_state state{};
 	state.load_preferences();
 
-	rimworld::user_interface user_interface{};
+	rimworld::user_interface user_interface{state};
 	sf::Clock delta_clock{};
 	while (window.isOpen()) {
 		sf::Event event{};
@@ -58,6 +58,7 @@ int main() {
 				window.close();
 			}
 		}
+		if (state.should_update_style()) { rimworld::user_interface::setup_style(state); }
 		if (state.should_update_font()) { rimworld::user_interface::setup_font(state); }
 
 		const auto elapsed_milliseconds = static_cast<std::uint32_t>(delta_clock.getElapsedTime().asMilliseconds());

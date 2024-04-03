@@ -9,6 +9,7 @@
 #include "todds/rimworld_log.hpp"
 #include "todds/rimworld_project.hpp"
 #include "todds/rimworld_state.hpp"
+#include "todds/ui_style.hpp"
 
 #include <boost/predef.h>
 #include <clipboardxx.hpp>
@@ -55,12 +56,17 @@ namespace rimworld {
 
 struct ui_impl final {
 	std::uint32_t total_millis{};
+	styles::style style{};
 };
 
-user_interface::user_interface()
-	: _pimpl{std::make_unique<ui_impl>()} {}
+user_interface::user_interface(const execution_state& state)
+	: _pimpl{std::make_unique<ui_impl>()} {
+	styles::set_style(state.get_style());
+}
 
 user_interface::~user_interface() = default;
+
+void user_interface::setup_style(execution_state& state) { styles::set_style(state.get_style()); }
 
 void user_interface::setup_font(execution_state& state) {
 	ImGui::GetIO().Fonts->Clear();
@@ -69,7 +75,7 @@ void user_interface::setup_font(execution_state& state) {
 	(void)ImGui::SFML::UpdateFontTexture();
 }
 
-void show_setup_interface(execution_state& state) {
+void show_setup_interface(execution_state& state, ui_impl& ui_data) {
 	auto [path, valid_path] = state.target_path();
 	ImGui::SeparatorText("Mods to process");
 	if (!valid_path) { ImGui::PushStyleColor(ImGuiCol_Text, error_color); }
@@ -128,11 +134,36 @@ void show_setup_interface(execution_state& state) {
 	ImGui::NewLine();
 	ImGui::NewLine();
 
-	ImGui::SeparatorText("Font size");
+	ImGui::SeparatorText("User interface");
 	int font_size = static_cast<int>(state.get_font_size());
 	const int prev_font_size = font_size;
+	ImGui::TextUnformatted("Font size");
 	ImGui::SliderInt("##font_size", &font_size, 10, 64, "%d");
 	if (prev_font_size != font_size) { state.set_font_size(static_cast<float>(font_size)); }
+	ImGui::NewLine();
+	ImGui::NewLine();
+
+	ImGui::TextUnformatted("Style");
+
+	// Using the generic BeginCombo() API, you have full control over how to display the combo contents.
+	// (your selection data could be an index, a pointer to the object, an id for the object, a flag intrusively
+	// stored in the object itself, etc.)
+	constexpr std::array<const char*, static_cast<std::size_t>(styles::style::num_styles)> style_labels{
+		"Dark blue", "Deep dark", "Grey", "Nord"};
+
+	const auto selected_style_index = static_cast<std::size_t>(ui_data.style);
+	const char* combo_preview_value = style_labels[selected_style_index];
+	if (ImGui::BeginCombo("Style", combo_preview_value)) {
+		for (std::size_t index = 0U; index < style_labels.size(); index++) {
+			const bool is_selected = (selected_style_index == index);
+			if (ImGui::Selectable(style_labels[index], is_selected)) {
+				ui_data.style = static_cast<styles::style>(index);
+				styles::set_style(ui_data.style);
+			}
+			if (is_selected) { ImGui::SetItemDefaultFocus(); }
+		}
+		ImGui::EndCombo();
+	}
 }
 
 void show_processing_interface(execution_state& state, ui_impl& ui_data) {
@@ -266,7 +297,7 @@ void user_interface::show_user_interface(std::uint32_t elapsed_milliseconds, exe
 	if (state.started()) {
 		show_processing_interface(state, *_pimpl);
 	} else {
-		show_setup_interface(state);
+		show_setup_interface(state, *_pimpl);
 	}
 
 	ImGui::PopFont();

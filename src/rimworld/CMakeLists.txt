@@ -15,11 +15,15 @@ add_executable(rimworld_todds
 	include/todds/rimworld_state.hpp
 	include/todds/rimworld_ui.hpp
 	include/todds/rimworld_util.hpp
+	include/todds/ui_style.hpp
+	include/todds/ui_style_candy.hpp
 	rimworld_main.cpp
 	rimworld_log.cpp
 	rimworld_state.cpp
 	rimworld_ui.cpp
 	rimworld_util.cpp
+	ui_style.cpp
+	ui_style_candy.cpp
 )
 
 target_include_directories(rimworld_todds PRIVATE

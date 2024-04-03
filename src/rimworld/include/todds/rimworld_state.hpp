@@ -17,6 +17,8 @@
 #include <future>
 #include <utility>
 
+#include "ui_style.hpp"
+
 namespace rimworld {
 
 /** Representation of the encoding arguments and pipeline execution state. */
@@ -32,7 +34,11 @@ public:
 	 */
 	void update(std::uint32_t elapsed_milliseconds);
 
-	bool should_update_font() noexcept;
+	[[nodiscard]] bool should_update_style() noexcept;
+	void set_style(styles::style style);
+	[[nodiscard]] styles::style get_style() const noexcept;
+
+	[[nodiscard]] bool should_update_font() noexcept;
 	void set_font_size(float size) noexcept;
 	[[nodiscard]] float get_font_size() const noexcept;
 
@@ -71,6 +77,8 @@ public:
 
 private:
 	// Setup stage.
+	styles::style _style{styles::style::dark_blue};
+	bool _style_updated{};
 	float _font_size{22.0F};
 	bool _font_updated{};
 	todds::string _target_path{};

@@ -153,11 +153,25 @@ void execution_state::update(std::uint32_t /*elapsed_milliseconds*/) {
 	}
 }
 
+	bool execution_state::should_update_style() noexcept {
+	const bool result = !_style_updated;
+	_style_updated = true;
+	return result;
+}
+
+void execution_state::set_style(styles::style style) {
+	_style_updated = false;
+	_style = style;
+}
+
+styles::style execution_state::get_style() const noexcept { return _style; }
+
 bool execution_state::should_update_font() noexcept {
 	const bool result = !_font_updated;
 	_font_updated = true;
 	return result;
 }
+
 void execution_state::set_font_size(float size) noexcept {
 	_font_updated = false;
 	_font_size = size;
