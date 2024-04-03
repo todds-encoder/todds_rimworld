@@ -15,8 +15,13 @@ class execution_state;
 class user_interface final {
 public:
 	user_interface();
+	user_interface(const user_interface&) = delete;
+	user_interface(user_interface&&) = delete;
+	user_interface& operator=(const user_interface&) = delete;
+	user_interface& operator=(user_interface&&) = delete;
 	~user_interface();
-	void setup_font(execution_state& state);
+
+	static void setup_font(execution_state& state);
 	void show_user_interface(std::uint32_t elapsed_milliseconds, execution_state& state);
 
 private:

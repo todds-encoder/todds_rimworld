@@ -122,24 +122,24 @@ void execution_state::update(std::uint32_t /*elapsed_milliseconds*/) {
 	todds::report update{};
 	while (_updates.try_pop(update)) {
 		switch (update.type()) {
-		case todds::report_type::RETRIEVING_FILES_STARTED:
-			rimworld::log::info("RETRIEVING_FILES_STARTED report.");
+		case todds::report_type::retrieving_files_started:
+			rimworld::log::info("retrieving_files_started report.");
 			_retrieving_files = true;
 			break;
-		case todds::report_type::RETRIEVING_FILES_PROGRESS: ++_processed_files_during_retrieval; break;
-		case todds::report_type::FILE_RETRIEVAL_TIME:
+		case todds::report_type::retrieving_files_progress: ++_processed_files_during_retrieval; break;
+		case todds::report_type::file_retrieval_time:
 			_file_retrieval_milliseconds = update.value();
-			rimworld::log::info(fmt::format("FILE_RETRIEVAL_TIME report: {:d} ms", _file_retrieval_milliseconds));
+			rimworld::log::info(fmt::format("file_retrieval_time report: {:d} ms", _file_retrieval_milliseconds));
 			break;
-		case todds::report_type::FILE_VERBOSE: break;
-		case todds::report_type::PROCESS_STARTED:
+		case todds::report_type::file_verbose: break;
+		case todds::report_type::process_started:
 			_start_encoding_time = oneapi::tbb::tick_count::now();
 			_total_files = update.value();
-			rimworld::log::info(fmt::format("PROCESS_STARTED report: {:d} files", _total_files));
+			rimworld::log::info(fmt::format("process_started report: {:d} files", _total_files));
 			break;
-		case todds::report_type::ENCODING_PROGRESS: ++_current_files; break;
-		case todds::report_type::PIPELINE_ERROR:
-			rimworld::log::error(fmt::format("PIPELINE_ERROR: {:s}", update.data()));
+		case todds::report_type::encoding_progress: ++_current_files; break;
+		case todds::report_type::pipeline_error:
+			rimworld::log::error(fmt::format("pipeline_error: {:s}", update.data()));
 			_errors.emplace_back(update.data());
 			break;
 		}

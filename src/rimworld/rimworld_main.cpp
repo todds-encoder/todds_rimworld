@@ -8,10 +8,11 @@
 #include "todds/rimworld_state.hpp"
 #include "todds/rimworld_ui.hpp"
 
+#include <SFML/Graphics.hpp>
+
 #include <boost/nowide/filesystem.hpp>
 #include <boost/predef.h>
 #include <imgui-SFML.h>
-#include <SFML/Graphics.hpp>
 
 #include <array>
 
@@ -57,7 +58,7 @@ int main() {
 				window.close();
 			}
 		}
-		if (state.should_update_font()) { user_interface.setup_font(state); }
+		if (state.should_update_font()) { rimworld::user_interface::setup_font(state); }
 
 		const auto elapsed_milliseconds = static_cast<std::uint32_t>(delta_clock.getElapsedTime().asMilliseconds());
 		ImGui::SFML::Update(window, delta_clock.restart());

@@ -66,7 +66,7 @@ void user_interface::setup_font(execution_state& state) {
 	ImGui::GetIO().Fonts->Clear();
 	(void)ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(
 		manrope_regular_compressed_data.data(), manrope_regular_compressed_size, state.get_font_size());
-	ImGui::SFML::UpdateFontTexture();
+	(void)ImGui::SFML::UpdateFontTexture();
 }
 
 void show_setup_interface(execution_state& state) {
@@ -254,8 +254,9 @@ void user_interface::show_user_interface(std::uint32_t elapsed_milliseconds, exe
 	_pimpl->total_millis += elapsed_milliseconds;
 
 	// UI takes all available space left by SFML.
-	constexpr ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
-																		 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
+	constexpr ImGuiWindowFlags flags =
+		static_cast<unsigned int>(ImGuiWindowFlags_NoDecoration) | static_cast<unsigned int>(ImGuiWindowFlags_NoMove) |
+		static_cast<unsigned int>(ImGuiWindowFlags_NoResize) | static_cast<unsigned int>(ImGuiWindowFlags_NoSavedSettings);
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	auto& imgui_io = ImGui::GetIO();
 	ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);

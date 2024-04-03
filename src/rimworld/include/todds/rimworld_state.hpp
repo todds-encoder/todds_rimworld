@@ -34,40 +34,40 @@ public:
 
 	bool should_update_font() noexcept;
 	void set_font_size(float size) noexcept;
-	float get_font_size() const noexcept;
+	[[nodiscard]] float get_font_size() const noexcept;
 
 	[[nodiscard]] std::pair<todds::string, bool> target_path() const;
 	void set_target_path(const todds::string& path);
 	void reset_target_path();
 
-	bool process_all_files() const noexcept;
+	[[nodiscard]] bool process_all_files() const noexcept;
 	void set_process_all_files(bool value) noexcept;
 
 	void set_threads(std::size_t threads) noexcept;
-	std::size_t get_threads() const noexcept;
-	std::size_t get_max_threads() const noexcept;
-	bool is_encoding() const noexcept;
+	[[nodiscard]] std::size_t get_threads() const noexcept;
+	[[nodiscard]] std::size_t get_max_threads() const noexcept;
+	[[nodiscard]] bool is_encoding() const noexcept;
 	void set_encoding() noexcept;
 
-	bool is_cleaning() const noexcept;
+	[[nodiscard]] bool is_cleaning() const noexcept;
 	void set_cleaning() noexcept;
 
-	bool started() const noexcept;
-	bool finished() const noexcept;
+	[[nodiscard]] bool started() const noexcept;
+	[[nodiscard]] bool finished() const noexcept;
 
-	bool retrieving_files() const noexcept;
-	std::size_t processed_files_during_retrieval() const noexcept;
-	std::size_t file_retrieval_milliseconds() const noexcept;
-	std::size_t total_files() const noexcept;
-	std::size_t current_files() const noexcept;
-	double encoding_time() const noexcept;
-	const todds::vector<todds::string>& errors() const noexcept;
+	[[nodiscard]] bool retrieving_files() const noexcept;
+	[[nodiscard]] std::size_t processed_files_during_retrieval() const noexcept;
+	[[nodiscard]] std::size_t file_retrieval_milliseconds() const noexcept;
+	[[nodiscard]] std::size_t total_files() const noexcept;
+	[[nodiscard]] std::size_t current_files() const noexcept;
+	[[nodiscard]] double encoding_time() const noexcept;
+	[[nodiscard]] const todds::vector<todds::string>& errors() const noexcept;
 
 	void stop_encoding() noexcept;
-	bool is_stopping() const noexcept;
+	[[nodiscard]] bool is_stopping() const noexcept;
 
 	void close_window() noexcept;
-	bool should_close_window() const noexcept;
+	[[nodiscard]] bool should_close_window() const noexcept;
 
 private:
 	// Setup stage.

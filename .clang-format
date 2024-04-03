@@ -74,7 +74,7 @@ IncludeCategories:
   - Regex: '^<SDL.*'
     Priority: 15
   - Regex: '^<SFML.*'
-    Priority: 20
+    Priority: 15
   - Regex: '^<spdlog.*'
     Priority: 20
   - Regex: '^"spng.*'
