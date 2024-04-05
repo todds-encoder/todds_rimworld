@@ -38,6 +38,8 @@ public:
 	void set_style(styles::style style);
 	[[nodiscard]] styles::style get_style() const noexcept;
 
+	void set_can_change_font_size() noexcept;
+	[[nodiscard]] bool can_change_font_size() const noexcept;
 	[[nodiscard]] bool should_update_font() noexcept;
 	void set_font_size(float size) noexcept;
 	[[nodiscard]] float get_font_size() const noexcept;
@@ -79,6 +81,7 @@ private:
 	// Setup stage.
 	styles::style _style{styles::style::dark_blue};
 	bool _style_updated{};
+	bool _can_change_font_size{};
 	float _font_size{22.0F};
 	bool _font_updated{};
 	todds::string _target_path{};

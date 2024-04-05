@@ -21,6 +21,7 @@ namespace nl = nlohmann;
 namespace nw = boost::nowide;
 
 constexpr std::string_view font_size_key = "font_size";
+constexpr std::string_view style_index_key = "style_index";
 constexpr std::string_view target_path_key = "target_path";
 constexpr std::string_view process_all_files_key = "process_all_files";
 
@@ -82,6 +83,10 @@ void execution_state::load_preferences() {
 				reset_preferences();
 				return;
 			}
+			if (json.contains(style_index_key)) {
+				const auto style = static_cast<styles::style>(json.at(style_index_key));
+				set_style(style);
+			}
 			if (json.contains(font_size_key)) { set_font_size(json.at(font_size_key)); }
 			if (json.contains(target_path_key)) { set_target_path(json.at(target_path_key)); }
 			if (json.contains(process_all_files_key)) { set_process_all_files(json.at(process_all_files_key)); }
@@ -99,6 +104,7 @@ void execution_state::load_preferences() {
 
 void execution_state::save_preferences() {
 	nl::json json;
+	json[style_index_key] = static_cast<std::size_t>(_style);
 	json[font_size_key] = _font_size;
 	json[target_path_key] = _target_path;
 	json[process_all_files_key] = _process_all_files;
@@ -153,7 +159,7 @@ void execution_state::update(std::uint32_t /*elapsed_milliseconds*/) {
 	}
 }
 
-	bool execution_state::should_update_style() noexcept {
+bool execution_state::should_update_style() noexcept {
 	const bool result = !_style_updated;
 	_style_updated = true;
 	return result;
@@ -165,6 +171,10 @@ void execution_state::set_style(styles::style style) {
 }
 
 styles::style execution_state::get_style() const noexcept { return _style; }
+
+void execution_state::set_can_change_font_size() noexcept { _can_change_font_size = true; }
+
+bool execution_state::can_change_font_size() const noexcept { return _can_change_font_size; }
 
 bool execution_state::should_update_font() noexcept {
 	const bool result = !_font_updated;

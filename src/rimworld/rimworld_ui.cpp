@@ -5,7 +5,6 @@
 
 #include "todds/rimworld_ui.hpp"
 
-#include "todds/manrope_font.hpp"
 #include "todds/rimworld_log.hpp"
 #include "todds/rimworld_project.hpp"
 #include "todds/rimworld_state.hpp"
@@ -61,6 +60,7 @@ struct ui_impl final {
 
 user_interface::user_interface(const execution_state& state)
 	: _pimpl{std::make_unique<ui_impl>()} {
+	_pimpl->style = state.get_style();
 	styles::set_style(state.get_style());
 }
 
@@ -69,9 +69,11 @@ user_interface::~user_interface() = default;
 void user_interface::setup_style(execution_state& state) { styles::set_style(state.get_style()); }
 
 void user_interface::setup_font(execution_state& state) {
+	constexpr const char* default_font = "./manrope.ttf";
+	if (!boost::filesystem::exists(default_font)) { return; }
+	state.set_can_change_font_size();
 	ImGui::GetIO().Fonts->Clear();
-	(void)ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(
-		manrope_regular_compressed_data.data(), manrope_regular_compressed_size, state.get_font_size());
+	(void)ImGui::GetIO().Fonts->AddFontFromFileTTF(default_font, state.get_font_size());
 	(void)ImGui::SFML::UpdateFontTexture();
 }
 
@@ -135,16 +137,18 @@ void show_setup_interface(execution_state& state, ui_impl& ui_data) {
 	ImGui::NewLine();
 
 	ImGui::SeparatorText("User interface");
-	int font_size = static_cast<int>(state.get_font_size());
-	const int prev_font_size = font_size;
-	ImGui::TextUnformatted("Font size");
-	ImGui::SliderInt("##font_size", &font_size, 10, 64, "%d");
-	if (prev_font_size != font_size) { state.set_font_size(static_cast<float>(font_size)); }
-	ImGui::NewLine();
-	ImGui::NewLine();
+	if (state.can_change_font_size()) {
+		int font_size = static_cast<int>(state.get_font_size());
+		const int prev_font_size = font_size;
+		ImGui::TextUnformatted("Font size");
+		ImGui::SliderInt("##font_size", &font_size, 10, 64, "%d");
+		if (prev_font_size != font_size) { state.set_font_size(static_cast<float>(font_size)); }
+		ImGui::SameLine();
+		help_marker("Font size used by ToDDS. Has no impact on encoded textures.");
+		ImGui::NewLine();
+	}
 
 	ImGui::TextUnformatted("Style");
-
 	// Using the generic BeginCombo() API, you have full control over how to display the combo contents.
 	// (your selection data could be an index, a pointer to the object, an id for the object, a flag intrusively
 	// stored in the object itself, etc.)
@@ -153,17 +157,20 @@ void show_setup_interface(execution_state& state, ui_impl& ui_data) {
 
 	const auto selected_style_index = static_cast<std::size_t>(ui_data.style);
 	const char* combo_preview_value = style_labels[selected_style_index];
-	if (ImGui::BeginCombo("Style", combo_preview_value)) {
+	if (ImGui::BeginCombo("##Style", combo_preview_value)) {
 		for (std::size_t index = 0U; index < style_labels.size(); index++) {
 			const bool is_selected = (selected_style_index == index);
 			if (ImGui::Selectable(style_labels[index], is_selected)) {
 				ui_data.style = static_cast<styles::style>(index);
 				styles::set_style(ui_data.style);
+				state.set_style(ui_data.style);
 			}
 			if (is_selected) { ImGui::SetItemDefaultFocus(); }
 		}
 		ImGui::EndCombo();
 	}
+	ImGui::SameLine();
+	help_marker("User interface style used by ToDDS. Has no impact on encoded textures.");
 }
 
 void show_processing_interface(execution_state& state, ui_impl& ui_data) {

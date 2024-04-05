@@ -8,9 +8,9 @@ find_package(platform_folders)
 find_package(unofficial-clipboardxx)
 
 configure_file(include/todds/rimworld_project.hpp.in include/todds/rimworld_project.hpp @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/thirdparty/manrope/manrope.ttf ${CMAKE_CURRENT_BINARY_DIR}/manrope.ttf COPYONLY)
 
 add_executable(rimworld_todds
-	include/todds/manrope_font.hpp
 	include/todds/rimworld_log.hpp
 	include/todds/rimworld_state.hpp
 	include/todds/rimworld_ui.hpp
