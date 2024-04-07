@@ -150,7 +150,7 @@ void show_setup_interface(execution_state& state, ui_impl& ui_data) {
 		ImGui::NewLine();
 	}
 
-	ImGui::TextUnformatted("Style");
+	ImGui::TextUnformatted("Theme");
 	// Using the generic BeginCombo() API, you have full control over how to display the combo contents.
 	// (your selection data could be an index, a pointer to the object, an id for the object, a flag intrusively
 	// stored in the object itself, etc.)
@@ -172,7 +172,7 @@ void show_setup_interface(execution_state& state, ui_impl& ui_data) {
 		ImGui::EndCombo();
 	}
 	ImGui::SameLine();
-	help_marker("User interface style used by ToDDS. Has no impact on encoded textures.");
+	help_marker("User interface theme used by ToDDS. Has no impact on encoded textures.");
 }
 
 void show_processing_interface(execution_state& state, ui_impl& ui_data) {
