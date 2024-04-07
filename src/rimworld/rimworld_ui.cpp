@@ -17,6 +17,8 @@
 #include <imgui.h>
 #include <imgui_stdlib.h>
 
+#include <array>
+
 constexpr ImU32 error_color = IM_COL32(255U, 0U, 0U, 255U);
 
 void help_marker(const char* desc) {
