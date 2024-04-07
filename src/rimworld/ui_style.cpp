@@ -91,6 +91,8 @@ void set_style(style style) {
 		break;
 	case style::num_styles: break;
 	}
+
+	current_colors[ImGuiCol_FrameBgHovered].z = 1.0F;
 }
 
 } // namespace rimworld::styles
